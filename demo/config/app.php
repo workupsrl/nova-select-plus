@@ -167,7 +167,7 @@ return [
         /*
          * Package Service Providers...
          */
-        ZiffMedia\NovaSelectPlus\FieldServiceProvider::class,
+        Workup\NovaSelectPlus\FieldServiceProvider::class,
 
         /*
          * Application Service Providers...
