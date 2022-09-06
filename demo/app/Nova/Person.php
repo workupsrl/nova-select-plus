@@ -9,7 +9,7 @@ use Laravel\Nova\Fields\Gravatar;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Password;
 use Laravel\Nova\Fields\Text;
-use ZiffMedia\NovaSelectPlus\SelectPlus;
+use Workup\NovaSelectPlus\SelectPlus;
 
 class Person extends Resource
 {

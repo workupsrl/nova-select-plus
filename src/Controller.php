@@ -1,6 +1,6 @@
 <?php
 
-namespace ZiffMedia\NovaSelectPlus;
+namespace Workup\NovaSelectPlus;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Application;

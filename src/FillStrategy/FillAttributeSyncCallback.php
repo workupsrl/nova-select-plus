@@ -1,6 +1,6 @@
 <?php
 
-namespace ZiffMedia\NovaSelectPlus\FillStrategy;
+namespace Workup\NovaSelectPlus\FillStrategy;
 
 use Illuminate\Support\Collection;
 use RuntimeException;

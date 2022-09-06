@@ -176,7 +176,7 @@ return [
         App\Providers\RouteServiceProvider::class,
 
         Laravel\Tinker\TinkerServiceProvider::class,
-        ZiffMedia\NovaSelectPlus\FieldServiceProvider::class
+        Workup\NovaSelectPlus\FieldServiceProvider::class
     ],
 
     /*
