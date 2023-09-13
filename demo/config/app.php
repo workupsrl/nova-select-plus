@@ -167,7 +167,7 @@ return [
         /*
          * Package Service Providers...
          */
-        Workup\NovaSelectPlus\FieldServiceProvider::class,
+        Workup\Nova\SelectPlus\FieldServiceProvider::class,
 
         /*
          * Application Service Providers...

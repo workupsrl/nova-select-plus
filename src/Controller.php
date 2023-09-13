@@ -1,12 +1,12 @@
 <?php
 
-namespace Workup\NovaSelectPlus;
+namespace Workup\Nova\SelectPlus;
 
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Foundation\Application;
-use Illuminate\Support\Collection;
-use Laravel\Nova\Http\Requests\NovaRequest;
 use RuntimeException;
+use Illuminate\Support\Collection;
+use Illuminate\Foundation\Application;
+use Illuminate\Database\Eloquent\Builder;
+use Laravel\Nova\Http\Requests\NovaRequest;
 
 class Controller
 {

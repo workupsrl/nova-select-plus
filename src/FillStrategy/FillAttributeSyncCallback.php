@@ -1,6 +1,6 @@
 <?php
 
-namespace Workup\NovaSelectPlus\FillStrategy;
+namespace Workup\Nova\SelectPlus\FillStrategy;
 
 use Illuminate\Support\Collection;
 use RuntimeException;

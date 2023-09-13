@@ -1,9 +1,16 @@
+const path = require('path');
+
 module.exports = {
-  presets: [
-    require('./vendor/laravel/nova/tailwind.config.js'),
-  ],
   content: [
     './src/**/*.php',
-    './resources/**/*{js,vue,blade.php}'
-  ]
-}
+    "./resources/**/*.js",
+    './resources/js/**/*.vue',
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+  important: '.select-plus',
+  darkMode: 'class',
+  safelist: [],
+};

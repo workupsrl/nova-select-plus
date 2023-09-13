@@ -1,6 +1,6 @@
 <?php
 
-namespace Workup\NovaSelectPlus;
+namespace Workup\Nova\SelectPlus;
 
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Model;

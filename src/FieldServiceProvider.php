@@ -1,6 +1,6 @@
 <?php
 
-namespace Workup\NovaSelectPlus;
+namespace Workup\Nova\SelectPlus;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;

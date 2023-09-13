@@ -1,29 +1,13 @@
-let mix = require('laravel-mix')
+let mix = require('laravel-mix');
+let tailwindcss = require('tailwindcss');
+let postcssImport = require('postcss-import');
 
-require('./nova.mix')
+require('./nova.mix.js');
 
-mix.setPublicPath('dist')
+mix
+  .setPublicPath('dist')
   .js('resources/js/field.js', 'js')
-  .css('resources/css/field.css', 'css')
-  .options({
-    terser: {
-      extractComments: false,
-    }
-  })
   .vue({ version: 3 })
-  .nova('nova-select-plus')
+  .postCss('resources/css/field.css', 'dist/css/', [postcssImport(), tailwindcss('tailwind.config.js')])
+  .nova('workup/nova-select-plus');
 
-if (! mix.inProduction()) {
-  mix.sourceMaps()
-}
-
-// let mix = require('laravel-mix')
-//
-// require('./nova.mix')
-//
-// mix
-//     .setPublicPath('dist')
-//     .js('resources/js/field.js', 'js')
-//     .vue({ version: 3 })
-//     .css('resources/css/field.css', 'css')
-//     .nova('{{ name }}')

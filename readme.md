@@ -41,7 +41,7 @@ time, to populate a pivot value useful for ordering relations.
 ## Usage
 
 ```php
-use Workup\NovaSelectPlus\SelectPlus;
+use Workup\Nova\SelectPlus\SelectPlus;
 ```
 
 ```php
