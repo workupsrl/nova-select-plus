@@ -8,14 +8,31 @@
           :options="options"
           :placeholder="placeholder"
           :loading="isLoading"
-          :disabled="field.readonly"
+          :disabled="currentField.readonly"
           :multiple="true"
           :selectable="selectable"
           :filterable="filterable"
           @search="handleSearch"
+          @option:selected="$emit('field-changed')"
+          @option:deselected="$emit('field-changed')"
         >
+          <template #open-indicator="{ attributes }">
+            <svg
+              v-bind="attributes"
+              class="flex-shrink-0 pointer-events-none form-select-arrow"
+              xmlns="http://www.w3.org/2000/svg"
+              width="10"
+              height="6"
+              viewBox="0 0 10 6"
+            >
+              <path
+                class="fill-current"
+                d="M8.292893.292893c.390525-.390524 1.023689-.390524 1.414214 0 .390524.390525.390524 1.023689 0 1.414214l-4 4c-.390525.390524-1.023689.390524-1.414214 0l-4-4c-.390524-.390525-.390524-1.023689 0-1.414214.390525-.390524 1.023689-.390524 1.414214 0L5 3.585786 8.292893.292893z"
+              ></path>
+            </svg>
+          </template>
           <template #no-options>
-            <span v-if="field.isAjaxSearchable">
+            <span v-if="currentField.isAjaxSearchable">
               Type to search...
               <span v-if="ajaxSearchNoResults">Nothing found.</span>
             </span>
@@ -52,7 +69,7 @@
       </template>
 
       <span
-        v-if="field.isReorderable"
+        v-if="currentField.isReorderable"
         class="float-right text-sm ml-3 border-1 mt-2 mr-4"
       >
         <a
@@ -77,7 +94,7 @@
 </template>
 
 <script>
-import { FormField, HandlesValidationErrors } from 'laravel-nova'
+import { DependentFormField, HandlesValidationErrors } from 'laravel-nova'
 import vSelect from 'vue-select'
 import { debounce } from 'lodash'
 import { VueDraggableNext as vDraggable } from 'vue-draggable-next'
@@ -88,7 +105,7 @@ export default {
     vDraggable
   },
 
-  mixins: [FormField, HandlesValidationErrors],
+  mixins: [DependentFormField, HandlesValidationErrors],
 
   props: ['resourceName', 'resourceId', 'field'],
 
@@ -106,28 +123,60 @@ export default {
   },
 
   methods: {
+    onSyncedField() {
+       this.setup()
+    },
+
     setInitialValue () {
-      this.selected = this.field.value || []
+      this.selected = this.currentField.value || []
     },
 
-    fill (formData) {
-      formData.append(this.field.attribute, JSON.stringify(this.selected))
-    },
+    setup () {
+      this.placeholder = this.currentField?.extraAttributes?.placeholder
 
-    selectable () {
-      if (this.field['maxSelections'] <= 0) {
-        return true
-      }
+      // if there is no options (not yet supported), but needs the full list via ajax
+      if (this.currentField['isAjaxSearchable'] === false
+        || (this.currentField['isAjaxSearchable'] === true && this.currentField['isAjaxSearchableEmptySearch'] === true)
+      ) {
+        const params = {}
 
-      return this.selected.length < this.field['maxSelections']
-    },
+        if (this.currentField.dependsOn) {
+          Object.assign(params, this.currentField.dependsOn)
+        }
 
-    handleSearch: debounce(function (search, loading) {
-      if (this.field['isAjaxSearchable'] === false) {
+        Object.assign(params, { resourceId: this.resourceId })
+
+        Nova.request().get('/nova-vendor/select-plus/' + this.resourceName + '/' + this.currentField['relationshipName'], { params })
+          .then(resp => {
+            this.options = resp.data
+            this.isLoading = false
+          })
+
         return
       }
 
-      if (this.field['isAjaxSearchableEmptySearch'] === false && !search) {
+      this.isLoading = false
+      this.filterable = false
+    },
+
+    fill (formData) {
+      this.fillIfVisible(formData, this.currentField.attribute, JSON.stringify(this.selected))
+    },
+
+    selectable () {
+      if (this.currentField['maxSelections'] <= 0) {
+        return true
+      }
+
+      return this.selected.length < this.currentField['maxSelections']
+    },
+
+    handleSearch: debounce(function (search, loading) {
+      if (this.currentField['isAjaxSearchable'] === false) {
+        return
+      }
+
+      if (this.currentField['isAjaxSearchableEmptySearch'] === false && !search) {
         this.ajaxSearchNoResults = false
 
         return
@@ -135,9 +184,15 @@ export default {
 
       loading(true)
 
-      Nova.request().get('/nova-vendor/select-plus/' + this.resourceName + '/' + this.field['relationshipName'], {
-        params: { search: search, resourceId: this.resourceId }
-      })
+      const params = {}
+
+      if (this.currentField.dependsOn) {
+        Object.assign(params, this.currentField.dependsOn)
+      }
+
+      Object.assign(params, { search: search, resourceId: this.resourceId })
+
+      Nova.request().get('/nova-vendor/select-plus/' + this.resourceName + '/' + this.currentField['relationshipName'], { params })
         .then(resp => {
           this.options = resp.data
 
@@ -158,25 +213,7 @@ export default {
   },
 
   mounted () {
-    this.placeholder = this.field?.extraAttributes?.placeholder
-
-    // if there is no options (not yet supported), but needs the full list via ajax
-    if (this.field['isAjaxSearchable'] === false
-        || (this.field['isAjaxSearchable'] === true && this.field['isAjaxSearchableEmptySearch'] === true)
-    ) {
-      Nova.request().get('/nova-vendor/select-plus/' + this.resourceName + '/' + this.field['relationshipName'], {
-        params: { resourceId: this.resourceId }
-      })
-        .then(resp => {
-          this.options = resp.data
-          this.isLoading = false
-        })
-
-      return
-    }
-
-    this.isLoading = false
-    this.filterable = false
+    this.setup()
   }
 }
 </script>

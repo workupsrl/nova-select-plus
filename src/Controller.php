@@ -22,6 +22,7 @@ class Controller
         /** @var SelectPlus $field */
         $field = $request->newResource()
             ->availableFields($request)
+            ->applyDependsOnWithDefaultValues($request)
             ->where('component', 'select-plus')
             ->where('attribute', $relationship)
             ->first();
@@ -40,7 +41,6 @@ class Controller
             $search = $request->get('search');
 
             if (is_callable($field->ajaxSearchable)) {
-
                 $return = $this->application->call($field->ajaxSearchable, compact('query', 'request', 'search', 'resourceId'));
 
                 if ($return instanceof Builder) {

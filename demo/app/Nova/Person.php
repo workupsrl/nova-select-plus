@@ -3,8 +3,9 @@
 namespace App\Nova;
 
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\Request;
+use Laravel\Nova\Fields\Boolean;
 use Laravel\Nova\Fields\ID;
+use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Workup\NovaSelectPlus\SelectPlus;
@@ -23,7 +24,7 @@ class Person extends Resource
      *
      * @var string
      */
-    public static $title = 'id';
+    public static $title = 'name';
 
     /**
      * The columns that should be searched.
@@ -33,6 +34,8 @@ class Person extends Resource
     public static $search = [
         'id',
     ];
+
+    public static $preventFormAbandonment = true;
 
     /**
      * Get the fields displayed by the resource.
@@ -50,16 +53,6 @@ class Person extends Resource
                 ->rules('required', 'max:255')
                 ->help('The name is required'),
 
-            SelectPlus::make('States Lived In', 'statesLivedIn', State::class)
-                ->optionsQuery(function (Builder $query) {
-                    $query->where('name', 'NOT LIKE', 'C%');
-                })
-                // ->label(fn ($state) => $state->id . ' - ' . $state->name)
-                // ->ajaxSearchable(true)
-                // ->ajaxSearchable(fn ($query, $search) => $query->where('name', 'LIKE', "%{$search}%")->limit(2))
-                ->placeholder('Type to search')
-                ->help('This is a belongsToMany() relationship in the model'),
-
             SelectPlus::make('States Visited', 'statesVisited', State::class)
                 ->usingIndexLabel(function ($models) {
                     $value = $models->take(1)->pluck('name');
@@ -76,9 +69,57 @@ class Person extends Resource
                 ->ajaxSearchable(function (Builder $query, $search) {
                     $query->where('name', 'LIKE', "%{$search}%")->limit(5);
                 }, true)
-                ->label(fn ($state) => $state->name . " <span class=\"text-xs\">({$state->code})</span>")
+
+                // this is an example of hooking into the collection to result mapping, and doing an extra lookup for additional information
+
+                // ->withMapToSelectionValues(function (Collection $collection) {
+                //     $counts = DB::table('states')
+                //         ->select(['id', DB::raw('length(name) as count')])
+                //         ->whereIn('id', $collection->pluck('model.id'))
+                //         ->get()
+                //         ->mapWithKeys(fn ($item) => [$item->id => $item->count]);
+                //
+                //     return $collection->map(function ($result) use ($counts) {
+                //         $result['label'] = $result['model']->name . ' (' . $counts[$result['model']->id] . ')';
+                //         return $result;
+                //     });
+                // })
+                ->label(fn ($state) => $state->name." <span class=\"text-xs\">({$state->code})</span>")
                 ->reorderable('order')
                 ->help('This is a belongsToMany() relationship with a pivot attribute for tracking order, and is ajax searchable.'),
+
+            // Select::make('Only Certain States', 'onlyCertainStates')
+            //     ->options([
+            //         'Yes' => 'Yes',
+            //         'No' => 'No'
+            //     ]),
+
+            SelectPlus::make('States Lived In', 'statesLivedIn', State::class)
+                // ->dependsOn(
+                //     ['onlyCertainStates'],
+                //     function (SelectPlus $field, $request, $formData) {
+                //         if ($formData->onlyCertainStates == 'Yes') {
+                //             $field->optionsQuery(
+                //                 fn ($query) => $query->where('name', 'LIKE', 'L%')
+                //             );
+                //
+                //             // $field->ajaxSearchable(
+                //             //     fn($query, $search) => $query
+                //             //         ->where('name', 'LIKE', "%{$search}%")
+                //             //         ->where('name', 'LIKE', 'N%')
+                //             // );
+                //         }
+                //     }
+                // )
+                ->optionsQuery(function (Builder $query) {
+                    $query->where('name', 'NOT LIKE', 'C%');
+                })
+                // ->label(fn ($state) => $state->id . ' - ' . $state->name)
+                // ->ajaxSearchable(true)
+                // ->ajaxSearchable(fn ($query, $search) => $query->where('name', 'LIKE', "%{$search}%")->limit(2))
+                ->placeholder('Type to search')
+                ->help('This is a belongsToMany() relationship in the model'),
+
         ];
     }
 
