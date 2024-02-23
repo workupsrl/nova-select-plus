@@ -21,10 +21,10 @@
     }
 
     .nova-select-plus-vs .vs__selected {
-        @apply h-6 min-h-full border-0 text-xs font-bold rounded px-2 py-1 space-x-1 bg-primary-50 text-primary-600;
+        @apply h-6 min-h-8 border-0 text-xs font-bold rounded px-2 py-1 space-x-1 bg-primary-50 text-primary-600;
     }
     .nova-select-plus-vs .is_dark.vs__selected {
-        @apply h-6 min-h-full border-0 text-xs font-bold rounded px-2 py-1 space-x-1 bg-primary-500 text-gray-900;
+        @apply h-6 min-h-8 border-0 text-xs font-bold rounded px-2 py-1 space-x-1 bg-primary-500 text-gray-900;
     }
 
     .nova-select-plus-vs .vs__selected:hover {
